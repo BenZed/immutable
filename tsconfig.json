@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "types": [
+            "node"
+        ],
+        "outDir": "./lib"
+    },
+    "include": [
+        "./src"
+, "structs", "state"    ],
+    "exclude": [
+        "./src/**/*.test.ts"
+    ]
+}
