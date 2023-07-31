@@ -7,18 +7,20 @@ import { PublicStructural, Structural } from '../traits'
 
 /* eslint-disable
     @typescript-eslint/no-explicit-any
-*/ 
+*/
 
 /**
  * State preset for a public structural objects.
  * Any property is considered state, as long as it isn't a immutable interface method, or
  * a built-in object method.
  */
-export type PublicStructState<T extends object> = 
-    Pick<
+export type PublicStructState<T extends object> = Pick<
     T,
-    Exclude<NamesOf<T>, 'toString' | 'valueOf' | 'copy' | 'equals' | 'get' | 'apply'>
+    Exclude<
+        NamesOf<T>,
+        'toString' | 'valueOf' | 'copy' | 'equals' | 'get' | 'apply'
     >
+>
 
 //// PublicStruct ////
 
@@ -28,7 +30,6 @@ export type PublicStructState<T extends object> =
  * as state.
  */
 export abstract class PublicStruct extends Traits.use(PublicStructural) {
-
     get [Structural.state](): PublicStructState<this> {
         return omit(
             this,
@@ -40,9 +41,8 @@ export abstract class PublicStruct extends Traits.use(PublicStructural) {
             'equals'
         ) as PublicStructState<this>
     }
-    
+
     protected set [Structural.state](state: PublicStructState<this>) {
         assign(this, state)
     }
-
 }

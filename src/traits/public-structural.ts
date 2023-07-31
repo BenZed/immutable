@@ -1,12 +1,12 @@
-import { AnyTypeGuard, isFunc, isIntersection, isShape } from '@benzed/util'
+import { AnyTypeGuard, isFunc, isIntersection, isShape } from '@benzed/types'
 import { equals } from './comparable'
 
 import { copy } from './copyable'
-import Structural, { 
-    StructState, 
-    StructStateApply, 
-    StructStateUpdate, 
-    StructStatePath 
+import Structural, {
+    StructState,
+    StructStateApply,
+    StructStateUpdate,
+    StructStatePath
 } from './structural'
 
 /**
@@ -15,8 +15,7 @@ import Structural, {
  * immutable operations.
  */
 export abstract class PublicStructural extends Structural {
-
-    static override is: (input: unknown) => input is PublicStructural = 
+    static override is: (input: unknown) => input is PublicStructural =
         isIntersection(
             Structural.is,
             isShape({
@@ -34,11 +33,15 @@ export abstract class PublicStructural extends Structural {
         return Structural.get(this, ...path)
     }
 
-    create<P extends StructStatePath>(...pathAndState: [...path: P, state: StructStateApply<this, P>]): this {
+    create<P extends StructStatePath>(
+        ...pathAndState: [...path: P, state: StructStateApply<this, P>]
+    ): this {
         return Structural.create(this, ...pathAndState)
     }
 
-    update<P extends StructStatePath>(...pathAndUpdate: [...path: P, state: StructStateUpdate<this, P>]): this {
+    update<P extends StructStatePath>(
+        ...pathAndUpdate: [...path: P, state: StructStateUpdate<this, P>]
+    ): this {
         return Structural.update(this, ...pathAndUpdate)
     }
 
@@ -49,5 +52,4 @@ export abstract class PublicStructural extends Structural {
     equals(other: unknown): other is this {
         return equals(this, other)
     }
-
 }

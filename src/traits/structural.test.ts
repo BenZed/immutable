@@ -1,17 +1,18 @@
+import { Traits } from '@benzed/traits'
+import { assign, pick } from '@benzed/types'
 
-import { Trait } from '@benzed/traits'
-import { assign, pick } from '@benzed/util'
-
-import { expect, describe, it, } from '@jest/globals'
+import { expect, describe, it } from '@jest/globals'
 
 import { Stateful } from './stateful'
 import { Structural } from './structural'
 
 //// Setup ////
 
-class Vector extends Trait.use(Structural) {
-    
-    constructor(readonly x = 0, readonly y = 0) {
+class Vector extends Traits(Structural) {
+    constructor(
+        readonly x = 0,
+        readonly y = 0
+    ) {
         super()
     }
 
@@ -22,11 +23,13 @@ class Vector extends Trait.use(Structural) {
     set [Structural.state](value) {
         assign(this, value)
     }
-} 
+}
 
-class Shape extends Trait.use(Structural) {
-  
-    constructor(readonly color = 'black', readonly position = new Vector) {
+class Shape extends Traits(Structural) {
+    constructor(
+        readonly color = 'black',
+        readonly position = new Vector()
+    ) {
         super()
     }
 
@@ -37,24 +40,20 @@ class Shape extends Trait.use(Structural) {
     set [Stateful.state](value) {
         assign(this, value)
     }
-
 }
 
 //// Tests ////
 
 describe('Struct.copy', () => {
-
     it('creates an immutably copied object', () => {
         const v1 = new Vector(2, 2)
         const v2 = v1[Structural.copy]()
         expect(v1).not.toBe(v2)
         expect(v1).toEqual(v2)
     })
-
 })
 
 describe('Struct.equals', () => {
-
     it('returns true if two stateful objects of the same type have equal states', () => {
         const v1 = new Vector(2, 2)
         const v2 = new Vector(2, 2)
@@ -66,7 +65,6 @@ describe('Struct.equals', () => {
 })
 
 describe('Struct.get', () => {
-
     it('get deep state', () => {
         const shape = new Shape('blue', new Vector(1, 2))
 
@@ -80,14 +78,13 @@ describe('Struct.get', () => {
         expect(deepState).toEqual({
             color: 'blue',
             position: {
-                x: 1, 
+                x: 1,
                 y: 2
             }
         })
     })
 
     it('get at path', () => {
-
         const shape = new Shape('grey', new Vector(10, 10))
 
         const position = Structural.get(shape, 'position')
@@ -95,44 +92,37 @@ describe('Struct.get', () => {
 
         const x = Structural.get(shape, 'position', 'x')
         expect(x).toEqual(10)
-
     })
 
     it('throws at invalid paths', () => {
-
         const shape = new Shape('grey', new Vector(10, 10))
         expect(() => Structural.get(shape, 'ace')).toThrow('Invalid state')
-        expect(() => Structural.get(shape, 'ace', 'base')).toThrow('Invalid state')
-
+        expect(() => Structural.get(shape, 'ace', 'base')).toThrow(
+            'Invalid state'
+        )
     })
 })
 
 describe('Struct.set', () => {
-
     it('set deep state', () => {
+        const shape = new Shape('green', new Vector(0, 0))
 
-        const shape = new Shape('green', new Vector(0,0))
-
-        Structural.set(
-            shape,
-            {
-                color: 'red',
-                position: { x: 2 }
-            }
-        )
+        Structural.set(shape, {
+            color: 'red',
+            position: { x: 2 }
+        })
 
         expect(shape.color).toBe('red')
         expect(shape.position).toEqual(new Vector(2, 0))
     })
 
     it('set deep state at path', () => {
+        const shape = new Shape('red', new Vector(5, 5))
 
-        const shape = new Shape('red', new Vector(5,5))
-
-        Structural.set(shape, 'color', 'orange')  
+        Structural.set(shape, 'color', 'orange')
         expect(shape.color).toBe('orange')
 
-        Structural.set(shape, 'position', { x: 10 }) 
+        Structural.set(shape, 'position', { x: 10 })
         expect(shape.position).toBeInstanceOf(Vector)
         expect(shape.position.x).toBe(10)
 
@@ -140,22 +130,19 @@ describe('Struct.set', () => {
         expect(shape.position).toBeInstanceOf(Vector)
         expect(shape.position.y).toBe(7)
     })
-
 })
 
 describe('Struct.creat', () => {
-
     it('creates an immutably copied object with a modified state', () => {
-        const v1 = new Vector(2, 2) 
+        const v1 = new Vector(2, 2)
         const v2 = Structural.create(v1, new Vector(3, 3))
         expect(v1).not.toBe(v2)
         expect(v1).toEqual(new Vector(2, 2))
         expect(v2).toEqual(new Vector(3, 3))
     })
 
-    it('state can be applied deeply', () => { 
-
-        const shape = new Shape('turquoise', new Vector(10,10))
+    it('state can be applied deeply', () => {
+        const shape = new Shape('turquoise', new Vector(10, 10))
 
         const shape2 = Structural.create(shape, { position: { y: 5 } })
         expect(shape2).not.toBe(shape)
@@ -169,9 +156,8 @@ describe('Struct.creat', () => {
         })
     })
 
-    it('nested state can be applied deeply', () => { 
-
-        const shape = new Shape('orange', new Vector(10,10))
+    it('nested state can be applied deeply', () => {
+        const shape = new Shape('orange', new Vector(10, 10))
 
         const shape2 = Structural.create(shape, 'position', { x: 2 })
 
@@ -187,24 +173,19 @@ describe('Struct.creat', () => {
 })
 
 describe('Struct.update', () => {
-
     it('creates an immutably copied object with a modified state via update function', () => {
-        const v1 = new Vector(2, 2) 
+        const v1 = new Vector(2, 2)
         const v2 = Structural.update(v1, 'x', v => v + 1)
         expect(v1).not.toBe(v2)
         expect(v1).toEqual(new Vector(2, 2))
         expect(v2).toEqual(new Vector(3, 2))
 
-        const v3 = Structural.update(v1, v => new Vector(v.x * 5 , v.x * 5))
+        const v3 = Structural.update(v1, v => new Vector(v.x * 5, v.x * 5))
         expect(v3).toEqual(new Vector(10, 10))
-
     })
 
     it('works on deep states', () => {
-        const cube1 = new Shape(
-            'grey',
-            new Vector(10, 10)
-        )
+        const cube1 = new Shape('grey', new Vector(10, 10))
 
         const cube2 = Structural.update(cube1, 'position', 'x', v => v + 10)
 
@@ -212,7 +193,5 @@ describe('Struct.update', () => {
             color: 'grey',
             position: { x: 20, y: 10 }
         })
-
     })
-
 })

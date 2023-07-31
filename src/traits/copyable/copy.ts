@@ -1,12 +1,5 @@
-
-import { Traits } from '@benzed/traits'
-import { 
-    isArray,
-    isObject,
-    each,
-    isFunc
-} from '@benzed/util'
-
+import { isArray, isObject, isFunc } from '@benzed/types'
+import { each } from '@benzed/each'
 import { Copyable } from './copyable'
 
 //// Types ////
@@ -15,7 +8,7 @@ type Refs = WeakMap<object, object>
 
 //// Helpers ////
 
-const isTypedArray = (input: unknown): input is Array<unknown> => 
+const isTypedArray = (input: unknown): input is Array<unknown> =>
     [
         Int8Array,
         Uint8Array,
@@ -30,9 +23,8 @@ const isTypedArray = (input: unknown): input is Array<unknown> =>
 
 //// Main ////
 
-function * copyEach<T>(iterable: Iterable<T>, refs: Refs): Generator<T> {
-    for (const value of iterable)
-        yield copy(value, refs)
+function* copyEach<T>(iterable: Iterable<T>, refs: Refs): Generator<T> {
+    for (const value of iterable) yield copy(value, refs)
 }
 
 /**
@@ -40,46 +32,36 @@ function * copyEach<T>(iterable: Iterable<T>, refs: Refs): Generator<T> {
  * circular references.
  */
 function copy<T>(input: T, refs: Refs = new WeakMap()): T {
-
-    // non-copyables returned as-is
-    if (!isObject(input))
-        return input 
+    // non copy ables returned as-is
+    if (!isObject(input)) return input
 
     // Return existing Ref
-    if (refs.has(input))
-        return refs.get(input) as T
+    if (refs.has(input)) return refs.get(input) as T
 
-    const setRef = <Tx extends object>(
-        output: Tx
-    ): Tx => {
+    const setRef = <Tx extends object>(output: Tx): Tx => {
         refs.set(input, output)
         return output
     }
 
     // Copyable Implementation
-    if (Copyable.is(input)) 
-        return setRef(input[Copyable.copy]())
+    if (Copyable.is(input)) return setRef(input[Copyable.copy]())
 
     // objects that cannot be copied
-    if (
-        isFunc(input) ||
-        input instanceof WeakMap || 
-        input instanceof WeakSet
-    )
+    if (isFunc(input) || input instanceof WeakMap || input instanceof WeakSet)
         return input
 
     // Implementations for standard objects
-    if (input instanceof RegExp)
-        return new RegExp(input.source) as T
+    if (input instanceof RegExp) return new RegExp(input.source) as T
 
-    if (input instanceof Date)
-        return new Date(input.getTime()) as T
+    if (input instanceof Date) return new Date(input.getTime()) as T
 
     if ('Buffer' in globalThis && input instanceof Buffer)
         return Buffer.from(input) as T
 
     if (isTypedArray(input)) {
-        const TypedArray = input.constructor as new (...args: unknown[]) => typeof input
+        const TypedArray = input.constructor as new (
+            ...args: unknown[]
+        ) => typeof input
         return new TypedArray(input)
     }
 
@@ -92,21 +74,20 @@ function copy<T>(input: T, refs: Refs = new WeakMap()): T {
     }
 
     if (input instanceof Set) {
-        const set = setRef(new Set)
+        const set = setRef(new Set())
         input.forEach(v => set.add(copyWithRefs(v)))
         return set as T
     }
 
     if (input instanceof Map) {
-        const map = setRef(new Map)
-        input.forEach((v,k) => map.set(copyWithRefs(k), copyWithRefs(v)))
+        const map = setRef(new Map())
+        input.forEach((v, k) => map.set(copyWithRefs(k), copyWithRefs(v)))
         return map as T
     }
 
     const object = setRef(Object.create(input))
 
-    for (const key of each.keyOf(input))
-        object[key] = copyWithRefs(input[key])
+    for (const key of each.keyOf(input)) object[key] = copyWithRefs(input[key])
 
     return object
 }
@@ -115,9 +96,4 @@ function copy<T>(input: T, refs: Refs = new WeakMap()): T {
 
 export default copy
 
-export {
-
-    copy,
-    copyEach,
-
-}
+export { copy, copyEach }

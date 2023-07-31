@@ -6,7 +6,6 @@ import { Structural } from '../traits'
 //// Tests ////
 
 test('get state', () => {
-
     const record = new RecordStruct({
         a: 0,
         b: 0,
@@ -20,7 +19,6 @@ test('get state', () => {
 })
 
 test('get state at path', () => {
-
     const tree = new RecordStruct({
         chase: new RecordStruct({
             detail: new RecordStruct({
@@ -58,20 +56,17 @@ test('get state at path', () => {
 })
 
 test('create state', () => {
-
     const record = new RecordStruct({
         hello: 'world'
     })
 
     const record2 = Structural.create(record, { hello: 'my love' })
-    expect(Structural.get(record2)).toEqual({ hello: 'my love'})
+    expect(Structural.get(record2)).toEqual({ hello: 'my love' })
     expect(record2).not.toBe(record)
     expect(record2.hello).not.toBe(record.hello)
-
 })
 
 test('deep apply state', () => {
-
     const record = new RecordStruct({
         gangam: new RecordStruct({
             style: 'whoa'
@@ -79,7 +74,7 @@ test('deep apply state', () => {
     })
 
     const record2 = Structural.create(record, 'gangam', { style: 'yay' })
-    
+
     expect(Structural.get(record2)).toEqual({ gangam: { style: 'yay' } })
     expect(record2).not.toBe(record)
     expect(record2.gangam.style).not.toBe(record.gangam.style)

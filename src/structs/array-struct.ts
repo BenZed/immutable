@@ -14,7 +14,9 @@ import { PublicStructural, Stateful, Structural } from '../traits'
 //// Helper Types ////
 
 type ArrayMethodNames = keyof {
-    [K in keyof Array<unknown> as Array<unknown>[K] extends Func ? K : never]: never
+    [K in keyof Array<unknown> as Array<unknown>[K] extends Func
+        ? K
+        : never]: never
 }
 
 type ArrayParams<T, M extends ArrayMethodNames> = Parameters<Array<T>[M]>
@@ -24,15 +26,15 @@ type ArrayParams<T, M extends ArrayMethodNames> = Parameters<Array<T>[M]>
 const ArrayMethods = Array.prototype
 
 function applyArrayState<
-    T, 
-    S extends ArrayStruct<T>, 
-    M extends (this: ArrayLike<T>, ...args: any) => any>(
+    T,
+    S extends ArrayStruct<T>,
+    M extends (this: ArrayLike<T>, ...args: any) => any
+>(
     arrayStruct: S,
     method: M,
     args: Parameters<M>,
     stateFromReturnValue = false
 ): S {
-
     // create an arraylike out of the struct state, adding a mutable length property
     const arrayLike = { ...arrayStruct, length: arrayStruct.length }
 
@@ -40,15 +42,12 @@ function applyArrayState<
     const result = method.apply(arrayLike, args)
 
     // convert the array like back into a state
-    const state = stateFromReturnValue 
-        ? result
-        : omit(arrayLike, 'length')
+    const state = stateFromReturnValue ? result : omit(arrayLike, 'length')
 
     // clone struct and apply state
     const newArrayStruct = Object.create(arrayStruct.constructor.prototype)
     Structural.set(newArrayStruct, state)
     return newArrayStruct
-
 }
 
 //// Main ////
@@ -57,16 +56,17 @@ function applyArrayState<
  * An ArrayStruct implements a subset of the Array's methods, with the caveat that
  * none of the methods mutate the original array.
  */
-class ArrayStruct<T> extends Traits.use(PublicStructural) implements Iterable<T> {
-
+class ArrayStruct<T>
+    extends Traits.use(PublicStructural)
+    implements Iterable<T>
+{
     readonly [index: number]: T
 
     constructor(...items: T[]) {
         super()
 
         let index = 0
-        for (const item of items) 
-            (this as Mutable<this>)[index++] = item
+        for (const item of items) (this as Mutable<this>)[index++] = item
     }
 
     //// Interface ////
@@ -76,9 +76,7 @@ class ArrayStruct<T> extends Traits.use(PublicStructural) implements Iterable<T>
     }
 
     at(index: number): T | nil {
-        return this[
-            index < 0 ? index + this.length : index
-        ]
+        return this[index < 0 ? index + this.length : index]
     }
 
     /**
@@ -212,10 +210,9 @@ class ArrayStruct<T> extends Traits.use(PublicStructural) implements Iterable<T>
     }
 
     //// Iterable ////
-    
+
     *[Symbol.iterator](): Iterator<T> {
-        for (const index of each.indexOf(this))
-            yield this[index]
+        for (const index of each.indexOf(this)) yield this[index]
     }
 
     //// State ////
@@ -227,13 +224,10 @@ class ArrayStruct<T> extends Traits.use(PublicStructural) implements Iterable<T>
     set [Stateful.state](state: { [index: number]: T }) {
         assign(this, state)
     }
-
 }
 
 //// Export ////
 
 export default ArrayStruct
 
-export {
-    ArrayStruct
-}
+export { ArrayStruct }

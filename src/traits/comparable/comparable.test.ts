@@ -8,19 +8,24 @@ import equals from './equals'
 //// Tests ////
 
 describe('Comparable trait', () => {
-
     class Box {
-        constructor(public width: number, public height: number, public depth: number) {}
+        constructor(
+            public width: number,
+            public height: number,
+            public depth: number
+        ) {}
 
         get volume() {
-            return this.width * this.height * this.depth 
+            return this.width * this.height * this.depth
         }
 
         equals(other: unknown) {
-            return other instanceof Box &&
+            return (
+                other instanceof Box &&
                 other.width === this.width &&
                 other.height === this.height &&
                 other.depth === this.depth
+            )
         }
     }
 
@@ -28,29 +33,34 @@ describe('Comparable trait', () => {
         constructor(public radius: number) {}
 
         get volume() {
-            return 4 / 3 * Math.PI * this.radius ** 3 
+            return (4 / 3) * Math.PI * this.radius ** 3
         }
 
         [Comparable.equals](other: unknown): other is this {
-            return other instanceof Sphere &&
-                other.radius === this.radius
+            return other instanceof Sphere && other.radius === this.radius
         }
     }
 
     class Triangle extends Trait.use(Comparable) {
-        constructor(public a: number, public b: number, public c: number) {
+        constructor(
+            public a: number,
+            public b: number,
+            public c: number
+        ) {
             super()
         }
 
         get perimeter() {
-            return this.a + this.b + this.c 
+            return this.a + this.b + this.c
         }
 
         [Comparable.equals](other: unknown): other is this {
-            return other instanceof Triangle &&
+            return (
+                other instanceof Triangle &&
                 other.a === this.a &&
                 other.b === this.b &&
                 other.c === this.c
+            )
         }
     }
 
@@ -70,28 +80,35 @@ describe('Comparable trait', () => {
 
     it('compares objects by their values', () => {
         class Person extends Trait.use(Comparable) {
-            constructor(public name: string, public age: number) {
+            constructor(
+                public name: string,
+                public age: number
+            ) {
                 super()
             }
-    
+
             [Comparable.equals](other: unknown): other is this {
-                return other instanceof Person && this.name === other.name && this.age === other.age
+                return (
+                    other instanceof Person &&
+                    this.name === other.name &&
+                    this.age === other.age
+                )
             }
         }
-    
+
         const person1 = new Person('Alice', 25)
         const person2 = new Person('Alice', 25)
         const person3 = new Person('Bob', 30)
-    
+
         expect(equals(person1, person2)).toBe(true)
         expect(equals(person1, person3)).toBe(false)
         expect(equals(person1, person1)).toBe(true)
     })
-    
+
     it('compares using the equals symbolic property key', () => {
         class Foo extends Trait.use(Comparable) {
             value: string
-    
+
             constructor(value: string) {
                 super()
                 this.value = value
@@ -101,7 +118,7 @@ describe('Comparable trait', () => {
                 return other instanceof Foo && this.value === other.value
             }
         }
-    
+
         const foo1 = new Foo('hello')
         const foo2 = new Foo('hello')
         const foo3 = new Foo('world')
