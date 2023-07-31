@@ -6,15 +6,13 @@ import {
     isObject,
     isShape
 } from '@benzed/types'
-
+import Traits from '@benzed/traits'
 import { each } from '@benzed/each'
 
-import Traits from '@benzed/traits'
+import { $$state, Stateful, StateOf } from './stateful'
 
-import { Stateful, StateOf } from './stateful'
-
-import { equals, Comparable } from './comparable'
-import { copy, Copyable } from './copyable'
+import { $$equals, equals, Comparable } from './comparable'
+import { $$copy, copy, Copyable } from './copyable'
 
 //// EsLint ////
 /* eslint-disable 
@@ -87,6 +85,12 @@ type StructState<
     T extends Structural,
     P extends StructStatePath = []
 > = _StateAtPath<StateOf<T>, P>
+
+//// TODO why is this necessary? Prevents inherit unique symbol error ////
+
+void $$copy
+void $$equals
+void $$state
 
 //// Main ////
 
