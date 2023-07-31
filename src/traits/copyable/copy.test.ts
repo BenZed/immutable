@@ -4,23 +4,30 @@ import Copyable from './copyable'
 
 import { describe, it, expect } from '@jest/globals'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */ 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-it('is a function', () => {  
+it('is a function', () => {
     expect(typeof copy).toEqual('function')
 })
 
-describe('copies primitives', () => {  
-
-    const primitives = [ 
-        null, undefined, 1, -1, 0, Infinity,
-        -Infinity, true, false, 'some-string-value', ''
+describe('copies primitives', () => {
+    const primitives = [
+        null,
+        undefined,
+        1,
+        -1,
+        0,
+        Infinity,
+        -Infinity,
+        true,
+        false,
+        'some-string-value',
+        ''
     ]
 
     for (const value of primitives) {
         it(`works on ${value === '' ? '""' : value}`, () =>
-            expect(copy(value)).toEqual(value)
-        )
+            expect(copy(value)).toEqual(value))
     }
 
     it('works on NaN', () => {
@@ -53,7 +60,6 @@ describe('copies primitives', () => {
 })
 
 describe('copies generic objects', () => {
-
     it('works on plain objects', () => {
         const obj = { key: 'value' }
         const obj2 = copy(obj)
@@ -63,7 +69,6 @@ describe('copies generic objects', () => {
     })
 
     it('is recursive', () => {
-
         const obj = {
             foo: {
                 bar: true
@@ -77,7 +82,6 @@ describe('copies generic objects', () => {
     })
 
     it('allows duplicate references', () => {
-
         const passenger = { passenger: true }
         const bus = {
             type: 'bus',
@@ -96,24 +100,23 @@ describe('copies generic objects', () => {
         array.push(array)
 
         expect(() => copy(array)).not.toThrow()
-    }) 
+    })
 
     it('array sub-object undefined value bug', () => {
-
-        const array = [{
-            delay: undefined,
-            brand: 'cool'
-        }]
+        const array = [
+            {
+                delay: undefined,
+                brand: 'cool'
+            }
+        ]
 
         const array2 = copy(array)
         expect(array2).toEqual(array)
         expect(array2).not.toBe(array)
     })
-
 })
 
 describe('copies iterables', () => {
-
     it('arrays', () => {
         const arr = [1, 2, 3, 4, 5]
         const arr2 = copy(arr)
@@ -124,19 +127,16 @@ describe('copies iterables', () => {
 
     it('arrays with one length', () => {
         const arrOfZero = [5]
-        expect(copy(arrOfZero))
-            .toEqual([5])
+        expect(copy(arrOfZero)).toEqual([5])
     })
 
     it('arrays recursively', () => {
-
         const arr = [{ foo: false }, 1, 2, 3, 4]
         const arr2 = copy(arr)
 
         expect(arr2[0]).toEqual(arr[0])
         expect(arr2[0]).not.toBe(arr[0])
-
-    }) 
+    })
 
     describe('typed arrays', () => {
         for (const TypedArray of [
@@ -158,57 +158,54 @@ describe('copies iterables', () => {
                 expect(opt2).toBeInstanceOf(TypedArray)
             })
         }
-
     })
 
     it('buffers', () => {
         const buffer = Buffer.from([0, 1, 2, 3, 4, 5])
-        const buffer2 = copy(buffer) 
+        const buffer2 = copy(buffer)
         expect(buffer2).toEqual(buffer)
         expect(buffer2).toBeInstanceOf(Buffer)
         expect(buffer2).not.toBe(buffer)
     })
 
-    it('sets', () => { 
-
+    it('sets', () => {
         const set = new Set([1, 2, 3, 4, 5])
         const set2 = copy(set)
 
         expect(set2).toBeInstanceOf(Set)
         expect(set2).toEqual(set)
-
     })
 
     it('sets recursively', () => {
-
         const set = new Set([{ foo: false }, 2, 3, 4, 5])
         const set2 = copy(set)
 
         expect(set2).toBeInstanceOf(Set)
         expect(set2).toEqual(set)
         expect([...set2][0]).not.toBe([...set][0])
-
     })
 
     it('maps', () => {
-
-        const map = new Map([['one', 1], ['two', 2]])
+        const map = new Map([
+            ['one', 1],
+            ['two', 2]
+        ])
         const map2 = copy(map)
 
         expect(map2).toBeInstanceOf(Map)
         expect(map2).toEqual(map)
-
     })
 
     it('maps recursively', () => {
-
-        const map = new Map<any, any>([['one', { foo: false }], ['two', 2]])
+        const map = new Map<any, any>([
+            ['one', { foo: false }],
+            ['two', 2]
+        ])
         const map2 = copy(map)
 
         expect(map2).toBeInstanceOf(Map)
         expect(map2).toEqual(map)
         expect(map2.get('one')).not.toBe(map.get('one'))
-
     })
 
     it('weak collections return themselves', () => {
@@ -223,11 +220,9 @@ describe('copies iterables', () => {
         const set2 = copy(set)
         expect(set2).toBe(set)
     })
-
 })
 
 describe('handles non-standard classes with no copy implementation', () => {
-
     it('I mean, within reason', () => {
         class Foo {
             constructor(readonly bar: string) {}
@@ -238,9 +233,7 @@ describe('handles non-standard classes with no copy implementation', () => {
 
         expect(foo2).toBeInstanceOf(Foo)
         expect(foo2.bar).toEqual(foo1.bar)
-
     })
-
 })
 
 describe('handles objects created outside the prototype chain', () => {

@@ -1,5 +1,5 @@
-import { isShape, isFunc, AnyTypeGuard } from '@benzed/util'
-import { Traits } from '@benzed/traits'
+import { isShape, isFunc } from '@benzed/types'
+import { trait } from '@benzed/traits'
 
 //// Symbol ////
 
@@ -7,12 +7,16 @@ const $$copy = Symbol('=')
 
 //// Main ////
 
-abstract class Copyable extends Traits {
-
+@trait
+abstract class Copyable {
     /**
      * Symbolic key used to implement the copy method.
      */
     static readonly copy: typeof $$copy = $$copy
+
+    static readonly is = isShape<Copyable>({
+        [$$copy]: isFunc
+    })
 
     /**
      * Copy an object from a given object's prototype.
@@ -23,18 +27,11 @@ abstract class Copyable extends Traits {
         return Object.create(object.constructor.prototype)
     }
 
-    static override readonly is: (input: unknown) => input is Copyable = isShape({
-        [$$copy]: isFunc
-    }) as AnyTypeGuard
-
-    abstract [$$copy](): this 
-
+    abstract [$$copy](): this
 }
 
 //// Exports ////
 
 export default Copyable
 
-export {
-    Copyable
-}
+export { Copyable, $$copy }

@@ -1,5 +1,5 @@
-import { isShape, isFunc, AnyTypeGuard } from '@benzed/util'
-import { Trait } from '@benzed/traits'
+import { isShape, isFunc } from '@benzed/types'
+import { trait } from '@benzed/traits'
 
 //// Symbol ////
 
@@ -7,25 +7,22 @@ const $$equals = Symbol('==')
 
 //// Main ////
 
-abstract class Comparable extends Trait {
-
+@trait
+abstract class Comparable {
     /**
      * Symbolic key used to implement the compare method.
      */
     static readonly equals: typeof $$equals = $$equals
 
-    static override readonly is: (input: unknown) => input is Comparable = isShape({
+    static readonly is = isShape<Comparable>({
         [$$equals]: isFunc
-    }) as AnyTypeGuard 
+    });
 
-    abstract [$$equals](other: unknown): other is this 
-
+    abstract [$$equals](other: unknown): other is this
 }
 
 //// Exports ////
 
 export default Comparable
 
-export {
-    Comparable
-}
+export { Comparable, $$equals }

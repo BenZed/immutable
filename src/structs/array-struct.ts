@@ -1,7 +1,8 @@
-import { assign, each, Func, Mutable, nil, omit } from '@benzed/util'
+import { assign, Func, nil, omit } from '@benzed/types'
 
 import { adjacent, shuffle } from '@benzed/array'
 import { Traits } from '@benzed/traits'
+import { each } from '@benzed/each'
 
 import { PublicStructural, Stateful, Structural } from '../traits'
 
@@ -35,7 +36,7 @@ function applyArrayState<
     args: Parameters<M>,
     stateFromReturnValue = false
 ): S {
-    // create an arraylike out of the struct state, adding a mutable length property
+    // create an array like out of the struct state, adding a mutable length property
     const arrayLike = { ...arrayStruct, length: arrayStruct.length }
 
     // apply the method to the arrayLike
@@ -56,17 +57,14 @@ function applyArrayState<
  * An ArrayStruct implements a subset of the Array's methods, with the caveat that
  * none of the methods mutate the original array.
  */
-class ArrayStruct<T>
-    extends Traits.use(PublicStructural)
-    implements Iterable<T>
-{
+class ArrayStruct<T> extends Traits(PublicStructural) implements Iterable<T> {
     readonly [index: number]: T
 
     constructor(...items: T[]) {
         super()
 
         let index = 0
-        for (const item of items) (this as Mutable<this>)[index++] = item
+        for (const item of items) (this as any)[index++] = item
     }
 
     //// Interface ////
@@ -80,7 +78,7 @@ class ArrayStruct<T>
     }
 
     /**
-     * Retreive a new array struct
+     * Retrieve a new array struct
      * with the given item pushed onto the end
      */
     push(...items: ArrayParams<T, 'push'>): this {
@@ -88,7 +86,7 @@ class ArrayStruct<T>
     }
 
     /**
-     * Retreive a new array struct with
+     * Retrieve a new array struct with
      * it's last item popped off
      */
     pop(): this {
@@ -96,14 +94,14 @@ class ArrayStruct<T>
     }
 
     /**
-     * Retreive a new array struct with shift parameters applied
+     * Retrieve a new array struct with shift parameters applied
      */
     shift(): this {
         return applyArrayState(this, ArrayMethods.shift, [])
     }
 
     /**
-     * Retreive a new array struct with unshift parameters applied
+     * Retrieve a new array struct with unshift parameters applied
      */
     unshift(): this {
         return applyArrayState(this, ArrayMethods.shift, [])

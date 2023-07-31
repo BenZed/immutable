@@ -132,7 +132,7 @@ describe('Struct.set', () => {
     })
 })
 
-describe('Struct.creat', () => {
+describe('Struct.create', () => {
     it('creates an immutably copied object with a modified state', () => {
         const v1 = new Vector(2, 2)
         const v2 = Structural.create(v1, new Vector(3, 3))

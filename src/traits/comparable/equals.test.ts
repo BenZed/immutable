@@ -2,15 +2,14 @@ import equals from './equals'
 import { inspect } from 'util'
 
 import { describe, it, expect } from '@jest/globals'
-import { isObject } from '@benzed/util'
 import Comparable from './comparable'
+
+import { isObject } from '@benzed/types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe('returns true if two operands are "value-equal"', () => {
-
     describe('works on primitives', () => {
-
         const SYMBOL = Symbol('c')
 
         const primitives = [
@@ -34,24 +33,23 @@ describe('returns true if two operands are "value-equal"', () => {
             ['string', 'long-string', false]
         ]
 
-        for (const [a, b, output] of primitives) { 
-            it(inspect(
-                `${String(a)} == ${String(b)} : ${output?.toString()}`
-            ), () => {
-                expect(equals(a, b)).toEqual(output)
-            })
+        for (const [a, b, output] of primitives) {
+            it(
+                inspect(`${String(a)} == ${String(b)} : ${output?.toString()}`),
+                () => {
+                    expect(equals(a, b)).toEqual(output)
+                }
+            )
         }
     })
 })
 
 describe('works on arrays', () => {
     it('[1,2,3] equals [1,2,3]', () =>
-        expect(equals([1, 2, 3], [1, 2, 3])).toEqual(true)
-    )
+        expect(equals([1, 2, 3], [1, 2, 3])).toEqual(true))
 
     it('[1,2] not equal [1,2,3]', () =>
-        expect(equals([1, 2], [1, 2, 3])).toEqual(false)
-    )
+        expect(equals([1, 2], [1, 2, 3])).toEqual(false))
     describe('typed arrays', () => {
         const typedArrays = [
             Int8Array,
@@ -77,15 +75,12 @@ describe('works on arrays', () => {
                 const opt2 = new TypedArray([1, 2])
                 expect(equals(opt1, opt2)).toEqual(false)
             })
-
         }
     })
 })
 
 describe('works on objects', () => {
-
     it('plain', () => {
-
         const obj1 = { foo: 'bar' }
         const obj2 = { foo: 'bar' }
         const obj3 = { foo: 'baz' }
@@ -93,11 +88,9 @@ describe('works on objects', () => {
         expect(equals(obj1, obj1)).toEqual(true)
         expect(equals(obj1, obj2)).toEqual(true)
         expect(equals(obj1, obj3)).toEqual(false)
-
     })
 
     it('plain with mismatch keys', () => {
-
         const ob1 = {
             foo: 'bar'
         }
@@ -122,19 +115,18 @@ describe('works on objects', () => {
     })
 
     it('works on functions', () => {
-
         const foo: any = (): string => 'foo'
         const foo2: any = (): string => 'foo'
         const bar: any = (): string => 'bar'
         const bar2: any = (): string => 'bar'
 
         foo[Comparable.equals] =
-        foo2[Comparable.equals] =
-        bar[Comparable.equals] =
-        bar2[Comparable.equals] =
-        function (other: any) {
-            return other() === this() 
-        }
+            foo2[Comparable.equals] =
+            bar[Comparable.equals] =
+            bar2[Comparable.equals] =
+                function (other: any) {
+                    return other() === this()
+                }
 
         expect(Comparable.is(foo)).toBe(true)
         expect(Comparable.is(bar)).toBe(true)
@@ -143,12 +135,12 @@ describe('works on objects', () => {
         expect(equals(foo, bar)).toEqual(false)
         expect(equals(foo, foo2)).toEqual(true)
         expect(equals(bar, bar2)).toEqual(true)
-
     })
 
     it('works on keyed functions with matching keyed objects', () => {
-
-        const foo = (): void => { /* */ }
+        const foo = (): void => {
+            /* */
+        }
         const bar = {
             length: foo.length,
             name: foo.name
@@ -158,14 +150,12 @@ describe('works on objects', () => {
     })
 
     it('implement comparable', () => {
-
         let calls = 0
 
         class Foo {
-
             bar: string
 
-            constructor (bar: any) {
+            constructor(bar: any) {
                 this.bar = bar
             }
 
@@ -173,7 +163,7 @@ describe('works on objects', () => {
                 calls++
                 return b instanceof Foo && b.bar === this.bar
             }
-        } 
+        }
 
         const foo1 = new Foo('bar')
         const foo2 = new Foo('bar')
@@ -186,11 +176,9 @@ describe('works on objects', () => {
         expect(equals(foo1, foo1)).toEqual(true)
 
         expect(calls).toEqual(2)
-
     })
 
     it('handles circular references', () => {
-
         const circle: any = {
             foo: 'bar'
         }
@@ -199,12 +187,10 @@ describe('works on objects', () => {
 
         expect(() => equals(circle, circle)).not.toThrow(Error)
         expect(equals(circle, { foo: 'bar', circle })).toEqual(true)
-
     })
 })
 
-it('checks for identicality first', () => {
-
+it('checks for identical first', () => {
     let count = 0
 
     class EqualSpy {
@@ -218,51 +204,45 @@ it('checks for identicality first', () => {
 
     expect(equals(e, e)).toEqual(true)
     expect(count).toEqual(0)
-
 })
 
 it('works on native Map objects', () => {
-    const mapa = new Map()
-    const mapb = new Map()
+    const mapA = new Map()
+    const mapB = new Map()
 
-    expect(equals(mapa, mapb)).toEqual(true)
+    expect(equals(mapA, mapB)).toEqual(true)
 
-    mapa.set(0, 'zero')
-    expect(equals(mapa, mapb)).toEqual(false)
-
+    mapA.set(0, 'zero')
+    expect(equals(mapA, mapB)).toEqual(false)
 })
 
 it('works on native Set objects', () => {
-    const seta = new Set()
-    const setb = new Set()
+    const setA = new Set()
+    const setB = new Set()
 
-    expect(equals(seta, setb)).toEqual(true)
+    expect(equals(setA, setB)).toEqual(true)
 
-    setb.add(0)
-    expect(equals(seta, setb)).toEqual(false)
-
+    setB.add(0)
+    expect(equals(setA, setB)).toEqual(false)
 })
 
 it('works on regex', () => {
-    const onlya = /a/g
-    const onlyb = /b/i
+    const onlyA = /a/g
+    const onlyB = /b/i
 
-    expect(equals(onlya, onlyb)).toEqual(false)
-    expect(equals(onlya, /a/g)).toEqual(true)
-    expect(equals(onlya, /a/)).toEqual(false)
+    expect(equals(onlyA, onlyB)).toEqual(false)
+    expect(equals(onlyA, /a/g)).toEqual(true)
+    expect(equals(onlyA, /a/)).toEqual(false)
 })
 
 describe('overriding equality to compare primitives', () => {
-
     class Account {
-
         amount: number
 
-        constructor (amount: any) {
-            if (amount instanceof Account)
-                amount = amount.amount
+        constructor(amount: any) {
+            if (amount instanceof Account) amount = amount.amount
             this.amount = amount
-        } 
+        }
 
         toString(): string {
             return `$${this.amount}`
@@ -270,35 +250,33 @@ describe('overriding equality to compare primitives', () => {
 
         [Comparable.equals](right: unknown): boolean {
             const left = this.amount
-            right = right instanceof Account
-                ? right.amount
-                : (right as number)
+            right = right instanceof Account ? right.amount : (right as number)
 
             return Object.is(left, right)
         }
     }
 
-    const blingin = new Account(10000)
+    const rich = new Account(10000)
     const poor = new Account(-5)
     const invalid = new Account(NaN)
 
     const amounts = [
-        invalid, 
-        blingin, 
-        poor, 
-        blingin.amount, 
-        poor.amount, 
+        invalid,
+        rich,
+        poor,
+        rich.amount,
+        poor.amount,
         null,
-        invalid.amount, 
-        0, 
+        invalid.amount,
+        0,
         Infinity
     ]
 
     for (const a of amounts) {
         for (const b of amounts) {
             const result =
-                        Object.is(a, b) ||
-                        new Account(a)[Comparable.equals](new Account(b))
+                Object.is(a, b) ||
+                new Account(a)[Comparable.equals](new Account(b))
 
             it(inspect(`equals(${a}, ${b}) === ${result}`), () => {
                 expect(equals(a, b)).toEqual(result)

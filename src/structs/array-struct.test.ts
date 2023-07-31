@@ -3,13 +3,7 @@ import { RecordStruct } from './record-struct'
 
 import { describe, test, expect } from '@jest/globals'
 
-import {
-    equals,
-    PublicStructural,
-    Stateful,
-    StructState,
-    Structural
-} from '../traits'
+import { equals, PublicStructural, Stateful, Structural } from '../traits'
 
 //// Setup ////
 

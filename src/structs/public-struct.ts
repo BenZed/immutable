@@ -1,5 +1,6 @@
 import { Traits } from '@benzed/traits'
-import { assign, NamesOf, omit } from '@benzed/util'
+import { assign, omit } from '@benzed/types'
+import { NamesOf } from '@benzed/each'
 
 import { PublicStructural, Structural } from '../traits'
 
@@ -29,7 +30,7 @@ export type PublicStructState<T extends object> = Pick<
  * everything except public immutability methods (and toString, valueOf)
  * as state.
  */
-export abstract class PublicStruct extends Traits.use(PublicStructural) {
+export abstract class PublicStruct extends Traits(PublicStructural) {
     get [Structural.state](): PublicStructState<this> {
         return omit(
             this,

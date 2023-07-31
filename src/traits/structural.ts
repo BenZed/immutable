@@ -1,16 +1,15 @@
 import {
     AnyTypeGuard,
-    each,
-    Func,
     GenericObject,
     Infer,
-    isFunc,
     isIntersection,
     isObject,
     isShape
-} from '@benzed/util'
+} from '@benzed/types'
 
-import { Trait } from '@benzed/traits'
+import { each } from '@benzed/each'
+
+import Traits from '@benzed/traits'
 
 import { Stateful, StateOf } from './stateful'
 
@@ -94,9 +93,8 @@ type StructState<
 /**
  * A Structural object is an immutable stateful object with static methods
  * for deeply getting and setting state.
- *
  */
-abstract class Structural extends Trait.merge(Stateful, Copyable, Comparable) {
+abstract class Structural extends Traits.merge(Stateful, Copyable, Comparable) {
     /**
      * Get a sub struct from a struct
      */

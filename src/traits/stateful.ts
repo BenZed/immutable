@@ -1,15 +1,10 @@
-import { Trait } from '@benzed/traits'
-import {
-    AnyTypeGuard,
-    assign,
-    define,
-    each,
-    isKeyed,
-    isObject,
-    isString
-} from '@benzed/util'
+import { trait } from '@benzed/traits'
+import { assign, isKeyed, isObject, isString } from '@benzed/types'
 
-//// Sybol ////
+import { define } from '@benzed/util'
+import { each } from '@benzed/each'
+
+//// Symbol ////
 
 const $$state = Symbol('state')
 
@@ -23,7 +18,8 @@ type StateOf<T extends Stateful> = T[typeof $$state]
  * Stateful trait allows custom logic for getting/setting
  * an object's state.
  */
-abstract class Stateful extends Trait {
+@trait
+abstract class Stateful {
     /**
      * Set the state of an object using the State trait
      */
@@ -34,7 +30,7 @@ abstract class Stateful extends Trait {
 
         if (descriptor?.writable || descriptor?.set) object[$$state] = state
         else if (isObject(state)) {
-            // This isn't really a good place for this, but it's very convenent,
+            // This isn't really a good place for this, but it's very convenient,
             // what with all the name setting that's done on Callable objects.
             if ('name' in state && isString(state.name))
                 define.named(state.name, object)
@@ -50,8 +46,7 @@ abstract class Stateful extends Trait {
         return object[$$state]
     }
 
-    static override readonly is: (input: unknown) => input is Stateful =
-        isKeyed($$state) as AnyTypeGuard
+    static readonly is: (input: unknown) => input is Stateful = isKeyed($$state)
 
     /**
      * The symbolic key for the state accessor trait users need
@@ -66,4 +61,4 @@ abstract class Stateful extends Trait {
     protected abstract set [$$state](input: unknown)
 }
 
-export { Stateful, StateOf }
+export { Stateful, StateOf, $$state }

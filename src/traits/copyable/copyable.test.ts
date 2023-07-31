@@ -1,10 +1,13 @@
-import { Trait } from '@benzed/traits'
+import Traits from '@benzed/traits'
 import { describe, test, expect } from '@jest/globals'
 
 import { Copyable } from './copyable'
 
-class Person extends Trait.use(Copyable) {
-    constructor(public name: string, public age: number) {
+class Person extends Traits(Copyable) {
+    constructor(
+        public name: string,
+        public age: number
+    ) {
         super()
     }
 
@@ -13,9 +16,11 @@ class Person extends Trait.use(Copyable) {
     }
 }
 
-class Product extends Trait.use(Copyable) {
-
-    constructor(public name: string, public price: number) {
+class Product extends Traits(Copyable) {
+    constructor(
+        public name: string,
+        public price: number
+    ) {
         super()
     }
 
@@ -42,9 +47,9 @@ describe('Copyable.is', () => {
 
 describe('Copyable.copy', () => {
     test('returns a deep copy of an object', () => {
-        class Example extends Trait.use(Copyable) {
+        class Example extends Traits(Copyable) {
             constructor(
-                public prop1: string, 
+                public prop1: string,
                 public prop2: number,
                 public prop3: { nestedProp: boolean }
             ) {
@@ -52,7 +57,9 @@ describe('Copyable.copy', () => {
             }
 
             [Copyable.copy](): this {
-                return new Example(this.prop1, this.prop2, { nestedProp: this.prop3.nestedProp }) as this
+                return new Example(this.prop1, this.prop2, {
+                    nestedProp: this.prop3.nestedProp
+                }) as this
             }
         }
 

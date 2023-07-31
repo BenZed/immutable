@@ -1,5 +1,5 @@
 import { Traits } from '@benzed/traits'
-import { assign, GenericObject } from '@benzed/util'
+import { assign, GenericObject } from '@benzed/types'
 import { Stateful, Structural } from '../traits'
 
 //// Types ////
@@ -23,7 +23,7 @@ type RecordStruct<K extends string | symbol | number, V> = Record<K, V> &
 /**
  * Quite simply, a structural record.
  */
-const RecordStruct = class RecordStruct extends Traits.use(Structural) {
+const RecordStruct = class RecordStruct extends Traits(Structural) {
     constructor(record: GenericObject) {
         super()
         assign(this, record)

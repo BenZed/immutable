@@ -17,8 +17,8 @@ const edge = new (class Edge extends PublicStruct {
 })()
 
 test('get', () => {
-    const vstate = Structural.get(vector)
-    expect(vstate).toEqual(vector.get())
+    const vState = Structural.get(vector)
+    expect(vState).toEqual(vector.get())
 
     const estate = Structural.get(edge)
     expect(estate).toEqual(edge.get())
