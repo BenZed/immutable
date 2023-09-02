@@ -33,7 +33,7 @@ export type PublicStructState<T extends object> = Pick<
 export abstract class PublicStruct extends Traits(PublicStructural) {
     get [Structural.state](): PublicStructState<this> {
         return omit(
-            this,
+            this as any,
             'toString',
             'valueOf',
             'get',

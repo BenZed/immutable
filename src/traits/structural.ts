@@ -2,9 +2,9 @@ import {
     AnyTypeGuard,
     GenericObject,
     Infer,
-    isIntersection,
+    isIntersectionOf,
     isObject,
-    isShape
+    isShapeOf
 } from '@benzed/types'
 import Traits from '@benzed/traits'
 import { each } from '@benzed/each'
@@ -210,11 +210,11 @@ abstract class Structural extends Traits.merge(Stateful, Copyable, Comparable) {
         return this.create(original, ...(path as P), update(prev))
     }
 
-    static override is: (input: unknown) => input is Structural =
-        isIntersection(
+    static override readonly is: (input: unknown) => input is Structural =
+        isIntersectionOf(
             Comparable.is,
             Copyable.is as AnyTypeGuard,
-            isShape({
+            isShapeOf({
                 [Stateful.state]: isObject
             })
         )

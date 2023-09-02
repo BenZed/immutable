@@ -1,4 +1,9 @@
-import { AnyTypeGuard, isFunc, isIntersection, isShape } from '@benzed/types'
+import {
+    AnyTypeGuard,
+    isFunc,
+    isIntersectionOf,
+    isShapeOf
+} from '@benzed/types'
 import { equals } from './comparable'
 
 import { copy } from './copyable'
@@ -16,9 +21,9 @@ import Structural, {
  */
 export abstract class PublicStructural extends Structural {
     static override is: (input: unknown) => input is PublicStructural =
-        isIntersection(
+        isIntersectionOf(
             Structural.is,
-            isShape({
+            isShapeOf({
                 get: isFunc,
                 create: isFunc,
                 update: isFunc,

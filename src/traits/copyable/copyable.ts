@@ -1,4 +1,4 @@
-import { isShape, isFunc } from '@benzed/types'
+import { isShapeOf, isFunc } from '@benzed/types'
 import { trait } from '@benzed/traits'
 
 //// Symbol ////
@@ -14,7 +14,7 @@ abstract class Copyable {
      */
     static readonly copy: typeof $$copy = $$copy
 
-    static readonly is = isShape<Copyable>({
+    static readonly is = isShapeOf<Copyable>({
         [$$copy]: isFunc
     })
 

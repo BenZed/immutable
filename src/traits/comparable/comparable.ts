@@ -1,4 +1,4 @@
-import { isShape, isFunc } from '@benzed/types'
+import { isShapeOf, isFunc } from '@benzed/types'
 import { trait } from '@benzed/traits'
 
 //// Symbol ////
@@ -14,7 +14,7 @@ abstract class Comparable {
      */
     static readonly equals: typeof $$equals = $$equals
 
-    static readonly is = isShape<Comparable>({
+    static readonly is = isShapeOf<Comparable>({
         [$$equals]: isFunc
     });
 
